@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tandem – Calls</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <img class="glow glow--a" src="assets/img/glow1.svg" alt="">
+    <img class="glow glow--b" src="assets/img/glow2.svg" alt="">
+
+    <button class="logo" data-go="home" aria-label="Tandem home"><img src="assets/icons/compass.svg" alt=""></button>
+
+    <nav class="nav" id="nav" aria-label="Main">
+      <div class="nav__top">
+        <div class="nav__group nav__group--workspace">
+          <button class="nav__item nav__item--home" data-go="home" data-nav="home" title="Home"><img src="assets/icons/nav-home.svg" alt=""></button>
+          <div class="nav__pill">
+            <img class="nav__pill-bg" src="assets/img/nav-union-workspace.svg" alt="">
+            <button class="nav__item" data-go="chat" data-nav="chat" title="Chats"><img src="assets/icons/nav-chat.svg" alt=""></button>
+            <button class="nav__item" data-go="calls" data-nav="calls" title="Calls"><img src="assets/icons/nav-video.svg" alt=""></button>
+            <button class="nav__item" data-go="calendar" data-nav="calendar" title="Calendar"><img src="assets/icons/nav-calendar.svg" alt=""></button>
+            <button class="nav__item" data-go="tasks" data-nav="tasks" title="Tasks"><img src="assets/icons/nav-tasks.svg" alt=""></button>
+            <button class="nav__item" data-go="tables" data-nav="tables" title="Tables"><img src="assets/icons/nav-grid.svg" alt=""></button>
+          </div>
+        </div>
+        <div class="nav__pill nav__pill--community">
+          <img class="nav__pill-bg" src="assets/img/nav-union-community.svg" alt="">
+          <button class="nav__item" data-go="wiki" data-nav="wiki" title="Knowledge base"><img src="assets/icons/nav-book.svg" alt=""></button>
+          <button class="nav__item" data-go="docs" data-nav="docs" title="Documents"><img src="assets/icons/nav-file.svg" alt=""></button>
+        </div>
+      </div>
+      <div class="nav__pill nav__pill--settings">
+        <img class="nav__pill-bg" src="assets/img/nav-union-settings.svg" alt="">
+        <button class="nav__item" data-go="settings" data-nav="settings" title="Settings"><img src="assets/icons/nav-settings.svg" alt=""></button>
+      </div>
+    </nav>
+
+    <label class="search">
+      <img src="assets/icons/search.svg" alt="">
+      <input type="text" placeholder="Search people, tasks, tables…" aria-label="Search">
+    </label>
+
+    <div id="topbar-extra"></div>
+    <button class="bell" id="bell" aria-label="Notifications"><img src="assets/img/bell-btn.svg" alt=""></button>
+    <button class="profile" id="profile">
+      <img class="profile__avatar" src="assets/img/nina.png" alt="">
+      <span class="profile__name">Nina Park</span>
+      <span class="profile__email">nina@northwind.com</span>
+      <img class="profile__chev" src="assets/icons/dropdown.svg" alt="">
+    </button>
+
+    <main class="view" id="view"></main>
+  </div>
+
+  <div id="overlay-root"></div>
+  <div id="toast-root"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
