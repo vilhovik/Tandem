@@ -31,6 +31,8 @@
     modalData: null,
     incoming: null,
     calSelected: null,
+    calDay: 2,
+    callsSheet: false,
     callsTab: 'upcoming',
     callsSelected: 'dr',
     inCall: false,
@@ -232,10 +234,10 @@
       </div>`;
     }
 
-    return `<div class="page">
+    return `<div class="page page--chat ${S.chatListOpen ? "is-list" : ""}">
       <div class="chatlist"><h2>Chats</h2>${items || '<div class="empty-l">No chats found</div>'}</div>
       <div class="conv">
-        <div class="conv__head">${headAv}<div><div class="conv__name">${esc(headName)}</div><div class="conv__sub">${esc(headSub)}</div></div>
+        <div class="conv__head"><button class="conv__back only-mobile" data-a="chatBack" title="All chats">${ic("chevron-left", "conv__back-ic")}</button>${headAv}<div><div class="conv__name">${esc(headName)}</div><div class="conv__sub">${esc(headSub)}</div></div>
           <button class="conv__call ${S.pop === 'chatCall' ? 'is-open' : ''}" ${callDisabled ? 'disabled title="You are already in a call"' : ''} data-a="${isDM ? 'callPerson' : 'toggleChatCall'}" data-id="${isDM ? chat.person : ''}" data-keep>${ic('video-dark')}</button>
         </div>
         ${banner}
@@ -281,7 +283,7 @@
     if (sel) {
       const ppl = callPeople(sel);
       const isLive = sel.live;
-      details = `<div class="cdetails"><div class="cdetails__body">
+      details = `<div class="sheet-scrim only-mobile" data-a="closeCallsSheet"></div><div class="cdetails"><button class="sheet-close only-mobile" data-a="closeCallsSheet" title="Close">${ic("x-dark-14")}</button><div class="cdetails__body">
         ${isLive ? '<span class="badge-g">Live now</span>' : `<span class="badge-n">${esc(sel.time)}</span>`}
         <h3>${esc(sel.title)}</h3>
         <div class="cdetails__sub">${esc(sel.when || 'Today · ' + (sel.sub || '').split(' · ')[0])}</div>
@@ -302,7 +304,7 @@
       <button class="lpop__item" data-a="openSchedule"><span class="lpop__ic">${ic('calendar-dark')}</span><span><div class="lpop__t">Schedule a call</div><div class="lpop__s">Pick a time and invite people</div></span></button></div>` : '';
 
     const upCount = rows.length;
-    return `<div class="page">
+    return `<div class="page page--calls ${S.callsSheet ? "is-sheet" : ""}">
       <div class="ptitle">Calls</div>
       <button class="btn-blue btn-blue--44 calls-new" data-a="toggleCallsNew" data-keep>New call</button>
       <div class="tabs">
@@ -364,7 +366,7 @@
     return `<div class="page">
       <div class="ptitle">Calendar</div><div class="cal-range">Nov 9 – 13</div>
       <button class="btn-blue btn-blue--44 cal-sched" data-a="openSchedule">Schedule</button>
-      <div class="cal-grid"><div class="cal-days">${days.map((d, i) => `<div class="${i === 2 ? 'is-today' : ''}">${d}</div>`).join('')}</div>
+      <div class="cal-grid" data-day="${S.calDay}"><div class="cal-days">${days.map((d, i) => `<div class="${i === 2 ? "is-today" : ""} ${S.calDay === i ? "is-sel" : ""}" data-a="calDay" data-id="${i}">${d}</div>`).join("")}</div>
         ${hours}<div class="cal-cols" style="top:0">${cols}</div></div>
       ${pop}
     </div>`;
@@ -519,7 +521,7 @@
       const strip = rest.length > 4 ? rest.slice(0, 3).map((id) => tile(c, id)).join('') + moreTile(rest.length - 3) : rest.map((id) => tile(c, id)).join('');
       main = `<div class="speaker"><div class="speaker__main">${tile(c, big, { pinned: c.pinned === big })}</div><div class="speaker__strip tiles--sm">${strip}</div></div>`;
     } else {
-      const per = 12;
+      const per = window.innerWidth < 768 ? 999 : 12;
       let ids = everyone;
       let pager = '';
       if (everyone.length > per) {
@@ -708,7 +710,7 @@
         <button class="dpop__item" data-a="rmCohost" data-id="${c.rowMenu}"><span class="dpop__ic">${ic('settings-white')}</span><span class="dpop__t">${c.cohosts && c.cohosts[c.rowMenu] ? 'Remove co-host' : 'Make co-host'}</span></button>
         <button class="dpop__item" data-a="rmRemove" data-id="${c.rowMenu}"><span class="dpop__ic">${ic('hangup')}</span><span class="dpop__t">Remove from call</span></button></div>`;
     }
-    return `<aside class="panel" style="position:relative"><div class="panel__head"><span class="panel__title">People</span>${host ? '' : `<span class="panel__sub">${ids.length} in the call</span>`}${close}</div>
+    return `<aside class="panel"><div class="panel__head"><span class="panel__title">People</span>${host ? '' : `<span class="panel__sub">${ids.length} in the call</span>`}${close}</div>
       <div class="panel__scroll">${body}</div>
       ${S.guestMode ? '' : `<div class="panel__foot"><button class="wide-btn" data-a="copyLink">${ic('link', 'ic16')}Invite with link</button></div>`}
       ${menu}</aside>`;
@@ -770,6 +772,11 @@
         ${S.guestMode ? '' : `<button class="dpop__item" data-a="togglePop" data-id="share" data-keep><span class="dpop__ic">${ic('table')}</span><span class="dpop__text"><span class="dpop__t">Share a workspace object</span><span class="dpop__s">Table, task or document</span></span></button>`}
         <button class="dpop__item" data-a="togglePop" data-id="settings" data-keep><span class="dpop__ic">${ic('settings-white')}</span><span class="dpop__text"><span class="dpop__t">Call settings</span><span class="dpop__s">Devices, background, noise</span></span></button>
         <div class="dpop__div" style="margin:4px 12px 7px"></div>
+        <div class="only-mobile">
+          <button class="dpop__item" data-a="mShareScreen"><span class="dpop__ic">${ic("airplay")}</span><span class="dpop__text"><span class="dpop__t">${c.share && c.share.by === "me" ? "Stop sharing" : "Share screen"}</span><span class="dpop__s">Anything on your device</span></span></button>
+          ${S.guestMode ? "" : `<button class="dpop__item" data-a="mDetails"><span class="dpop__ic">${ic("info")}</span><span class="dpop__text"><span class="dpop__t">Call details</span><span class="dpop__s">Linked task, notes, link</span></span></button>`}
+          <button class="dpop__item" data-a="mCaptions"><span class="dpop__ic"><span class="cc-ic">CC</span></span><span class="dpop__text"><span class="dpop__t">${c.cc ? "Hide captions" : "Show captions"}</span><span class="dpop__s">Live transcript</span></span></button>
+        </div>
         <button class="dpop__item dpop__item--s" data-a="report"><span class="dpop__ic">${ic('info')}</span><span class="dpop__t">Report a problem</span></button>
       </div>`;
     }
@@ -1049,6 +1056,8 @@
     }
     const cs = $('#chatScroll'); if (cs && chatAtBottom) cs.scrollTop = cs.scrollHeight;
     const cb = $('#convBody'); if (cb) cb.scrollTop = cb.scrollHeight;
+    const cg = $(".cal-grid"); if (cg && cg.scrollWidth > cg.clientWidth + 4 && !S.calAutoScrolled) { const t = $(".cal-days .is-today"); if (t) { cg.scrollLeft = t.offsetLeft; S.calAutoScrolled = true; } }
+    if (S.route !== "calendar") S.calAutoScrolled = false;
   }
 
   /* ============================================================== ACTIONS */
@@ -1067,7 +1076,8 @@
   A.togglePill = () => { S.pop = S.pop === 'pill' ? null : 'pill'; };
   A.miniChat = () => { go('call'); M().panel = 'chat'; M().unread = 0; };
 
-  A.openChat = (el) => { S.chatId = el.dataset.id; S.unreadChats[S.chatId] = 0; go('chat'); };
+  A.chatBack = () => { S.chatListOpen = true; };
+  A.openChat = (el) => { S.chatListOpen = false; S.chatId = el.dataset.id; S.unreadChats[S.chatId] = 0; go('chat'); };
   A.toggleChatCall = () => { S.pop = S.pop === 'chatCall' ? null : 'chatCall'; };
   A.sendChat = () => {
     const key = 'chat-' + S.chatId; const text = (S.drafts[key] || '').trim(); if (!text) return false;
@@ -1140,6 +1150,9 @@
   A.toggleNoise = () => { const m = M(); m.noise = m.noise === false; };
   A.togglePop = (el) => { const m = M(); const id = el.dataset.id; m.pop = m.pop === id ? null : id; };
   A.toggleCC = () => { const m = M(); m.cc = !m.cc; };
+  A.mShareScreen = () => { const m = M(); m.pop = null; if (m.share && m.share.by === "me") { m.share = null; return; } A.shareScreen(); };
+  A.mDetails = () => { const m = M(); m.pop = null; m.panel = "details"; };
+  A.mCaptions = () => { const m = M(); m.pop = null; m.cc = !m.cc; };
   A.toggleHand = () => {
     const m = M(); m.hand = !m.hand; m.pop = null;
     if (m.hand) m.raised.me = true; else delete m.raised.me;
@@ -1302,7 +1315,9 @@
 
   // calls page
   A.callsTab = (el) => { S.callsTab = el.dataset.id; };
-  A.selectCall = (el) => { S.callsSelected = el.dataset.id; };
+  A.selectCall = (el) => { S.callsSelected = el.dataset.id; S.callsSheet = true; };
+  A.closeCallsSheet = () => { S.callsSheet = false; };
+  A.calDay = (el) => { S.calDay = +el.dataset.id; S.pop = null; };
   A.toggleCallsNew = () => { S.pop = S.pop === 'callsNew' ? null : 'callsNew'; };
   A.joinScheduled = (el) => {
     const id = el.dataset.id;
@@ -1525,6 +1540,7 @@
     const r = b.dataset.go;
     if (S.inCall && S.route === 'call') minimize();
     if (r === 'calls' && S.inCall && S.route !== 'call' && S.route === 'calls') { go('call'); render(); return; }
+    if (r === "chat") S.chatListOpen = true;
     go(r); render();
   }));
 
@@ -1682,6 +1698,8 @@
     { const bx = $("#cselect"), o = opts[f]; if (o.offsetTop < bx.scrollTop) bx.scrollTop = o.offsetTop - 6; else if (o.offsetTop + o.offsetHeight > bx.scrollTop + bx.clientHeight) bx.scrollTop = o.offsetTop + o.offsetHeight - bx.clientHeight + 6; }
   }, true);
   window.addEventListener("resize", closeSelect);
+  let rzT = null, lastBp = window.innerWidth < 768 ? "m" : window.innerWidth < 1024 ? "t" : "d";
+  window.addEventListener("resize", () => { clearTimeout(rzT); rzT = setTimeout(() => { const bp = window.innerWidth < 768 ? "m" : window.innerWidth < 1024 ? "t" : "d"; if (bp !== lastBp) { lastBp = bp; render(); } }, 150); });
   document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && S.expanded) { S.expanded = false; render(); } });
   document.addEventListener("scroll", (e) => { if (e.target && e.target.id === "cselect") return; closeSelect(); }, true);
   const _render = render;
